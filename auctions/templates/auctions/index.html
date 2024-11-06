@@ -1,0 +1,54 @@
+{% extends "auctions/layout.html" %}
+{% load my_filters %}
+
+{% block body %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-9 border-end pe-4">
+            <h2>Active Listings</h2>
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                {% if active %}
+                    {% for listing in active %}
+                    <div class="col">
+                        <a href="{% url 'listing_page' listing.id %}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <img src="{{ listing.img_url }}" class="card-img-top" alt="{{ listing.title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ listing.title }}</h5>
+                                    <p class="card-text">Initial Price: ${{ listing.initial_bid | currency }}</p>
+                                    <p class="card-text">Highest Bid: ${{ listing.highest_bid | currency }}</p>
+                                    <p class="card-text"><small class="text-muted">Opened: {{ listing.timestamp }}</small></p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No active listings available.</p>
+                {% endif %}
+            </div>
+        </div>
+  
+        <div class="col-md-3 ps-4">
+            <h2>My Bids</h2>
+            {% if my_bids %}
+                {% for bid in my_bids %}
+                <a href="{% url 'listing_page' bid.listing.id %}" class="text-decoration-none">
+                    <div class="card mb-3">
+                        <img src="{{ bid.listing.img_url }}" class="card-img-top" alt="{{ bid.listing.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ bid.listing.title }}</h5>
+                            <p class="card-text">Initial Price: ${{ bid.listing.initial_bid | currency }}</p>
+                            <p class="card-text">My Bid: ${{ bid.price | currency }}</p>
+                            <p class="card-text"><small class="text-muted">Opened: {{ bid.listing.timestamp }}</small></p>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <p>No bids placed.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

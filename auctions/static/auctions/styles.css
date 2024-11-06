@@ -1,0 +1,10 @@
+body {
+    padding: 10px;
+    /* background-color: rgb(62, 57, 57);
+    color: white */
+}
+
+#id_price{
+    width: 400px;
+    margin-bottom: 10px;
+}

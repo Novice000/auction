@@ -1,0 +1,104 @@
+{% extends "auctions/layout.html" %}
+{% load my_filters %}
+
+{% block body %}
+{% if winner %}
+<div>
+    <p>You won the bid</p>
+</div>
+{% else %}
+{% endif %}
+<div class="container my-4">
+    <!-- Listing Title and Watchlist Button -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>{{ listing.title }}</h3>
+        <div>
+            {% if watched %}
+            <a href="{% url 'remove_listing' watchlist_id.id %}" class="btn btn-outline-danger">
+                Remove From Watchlist
+            </a>
+            {% else %}
+            <a href="{% url 'add_listing' listing.id %}" class="btn btn-outline-primary">
+                Add To Watchlist
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Listing Details Section -->
+    <div class="row g-4">
+        <!-- Image and Description Column -->
+        <div class="col-md-6">
+            <img src="{{ listing.img_url }}" class="img-fluid rounded mb-3 w-50" alt="{{ listing.title }}">
+            <p>{{ listing.description }}</p>
+        </div>
+
+        <!-- Listing Info and Bid Form Column -->
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p><strong>Initial Bid:</strong> ${{ listing.initial_bid }}</p>
+                    <p><strong>Highest Bid:</strong> ${{ highest_bid | currency}}</p>
+                    <p><strong>Time Created:</strong> {{ listing.timestamp }}</p>
+                    <p><strong>Category:</strong> {{ listing.category }}</p>
+                    
+                    {% if creator and listing.closed %}
+                    <p>Listing already closed</p>
+                    {% elif creator and not closed %}
+                    <a href="{% url 'close_listing' listing.id %}" class="btn btn-danger w-100">
+                        Close Listing
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Bid Form -->
+            <form action="{% url 'bid' listing.id %}" method="post" class="mb-3">
+                {{ bid_form }}
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary w-100">Place Bid</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- My Bids and Comments Section -->
+    <div class="row mt-4">
+        <!-- My Bids Column -->
+        <div class="col-md-6">
+            <h4>My Bids</h4>
+            {% if my_bid %}
+            <ul class="list-group mb-4">
+                {% for bid in my_bid %}
+                <li class="list-group-item">
+                    You bid ${{ bid.price }} on {{ bid.timestamp }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No bids placed yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Comments Column -->
+        <div class="col-md-6">
+            <h4>Comments</h4>
+            {% if comments %}
+            <ul class="list-group mb-4">
+                {% for comment in comments %}
+                <li class="list-group-item">{{ comment }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No comments yet.</p>
+            {% endif %}
+            
+            <!-- Comment Form -->
+            <form action="{% url 'add_comment' listing.id %}" method="post">
+                {{ comment_form }}
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary w-100">Comment</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
